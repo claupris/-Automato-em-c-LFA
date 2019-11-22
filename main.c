@@ -1,159 +1,260 @@
+//**************************************
+// Name: NFA to DFA Conversion
+// Description:It is a program for NFA ( Non-deterministic Finite Automata) to DFA (Deterministic Finite Auctomata ) Conversion using the Subset Construction Algorithm.
+// By: Ritin (from psc cd)
+//
+// Inputs:NFA states, inputs, transitions
+//
+// Returns:DFA transition table
+//**************************************
+
+//NFA to DFA conversion
 #include <stdio.h>
 #include <string.h>
-#define TAM 100
-
-void qInicio ( char palavra[TAM],int size);
-void q0( int contador, char palavra[TAM],int size);
-void q1( int contador, char palavra[TAM],int size);
-void q2( int contador, char palavra[TAM],int size);
-void q3( int contador, char palavra[TAM],int size);
-void q4( int contador, char palavra[TAM],int size);
-void q5( int contador, char palavra[TAM],int size);
-void q6( int contador, char palavra[TAM],int size);
-void q7( int contador, char palavra[TAM],int size);
-void q8( int contador, char palavra[TAM],int size);
-void q9( int contador, char palavra[TAM],int size);
-void qFim();
-void qErro();
-
-int main(){
-	int size = 0;
-    char palavra[TAM]; //casos de comprovação:
-    fflush(stdin);
-    gets(palavra);
-
-    while(palavra[size] != '\0')
-    {
-    	size++;
-	}
-
-    qInicio(palavra,size);
-
-    return 0;
+#define STATES 50
+struct Dstate
+{
+	char name; // nome
+	char StateString[STATES+1];  //Estado da string
+	char trans[10];
+	int is_final; //verifica se é o estado final
+}Dstates[50];
+struct tran
+{
+	char sym;
+	int tostates[50];
+	int notran;
+};
+struct state
+{
+	int no;
+	struct tran tranlist[50];
+};
+int stackA[100],stackB[100],C[100],Cptr=-1,Aptr=-1,Bptr=-1;
+struct state States[STATES];
+char temp[STATES+1],inp[10];
+int nos,noi,nof,j,k,nods=-1;
+void pushA(int z)
+{
+	stackA[++Aptr]=z;
 }
-
-void qInicio ( char palavra[TAM],int size ){
-    int contador = 0;
-    q0( contador, palavra,size );
+void pushB(int z)
+{
+	stackB[++Bptr]=z;
 }
-
-void q0( int contador, char palavra[TAM] ,int size){
-    if ( contador < TAM ){
-        if ( palavra[contador] == 'f' ){
-           q1( ++contador, palavra,size );
-
-        }else if (palavra[contador] == 'c'){
-           q8( ++contador, palavra ,size);
-
-        }else{
-            qErro();
-        }
-
-    }
+int popA()
+{
+	return stackA[Aptr--];
 }
-
-void q1( int contador, char palavra[TAM] ,int size){
-    if ( contador < TAM ){
-        if ( palavra[contador] == 'l' ){
-          q2( ++contador, palavra ,size);
-
-        }else if (palavra[contador] == 'o'){
-           q3( ++contador, palavra,size );
-
-        }else{
-            qErro();
-        }
-
-    }
-}
-
-void q2( int contador, char palavra[TAM] ,int size){
-    if ( palavra[contador] == 'o' ) {
-        q5 ( ++contador, palavra,size );
-
-    } else {
-        qErro();
-    }
-}
-
-void q3( int contador, char palavra[TAM] ,int size){
-    if ( palavra[contador] == 'r' ) {
-        q4 ( ++contador, palavra ,size);
-
-    } else {
-        qErro();
-    }
-}
-
-void q4( int contador, char palavra[TAM] ,int size){
-	if(contador == size)
+void copy(int i)
+{
+	char temp[STATES+1]=" ";
+	int k=0;
+	Bptr=-1;
+	strcpy(temp,Dstates[i].StateString);
+	while(temp[k]!='\0')
 	{
-		qFim();
+		pushB(temp[k]-'0');
+		k++;
 	}
-
-    else
-    {
-    	qErro();
-	}
-
 }
-
-void q5( int contador, char palavra[TAM] ,int size){
-    if ( palavra[contador] == 'a' ) {
-        q6 ( ++contador, palavra ,size);
-
-    } else {
-        qErro();
-    }
+int popB()
+{
+	return stackB[Bptr--];
 }
-
-void q6( int contador, char palavra[TAM] ,int size){
-    if ( palavra[contador] == 't' ) {
-        q7 ( ++contador, palavra ,size);
-
-    } else {
-        qErro();
-    }
+int peekB()
+{
+	return stackA[Bptr];
 }
-
-void q7( int contador, char palavra[TAM],int size ){
-    if(contador == size)
+int peekA()
+{
+	return stackA[Aptr];
+}
+int seek(int arr[],int ptr,int s)
+{
+	int i;
+	for(i=0;i<=ptr;i++)
 	{
-		qFim();
+		if(s==arr[i])
+			return 1;
 	}
-
-    else
-    {
-    	qErro();
+	return 0;
+}
+void sort()
+{
+	int i,j,temp;
+	for(i=0;i<Bptr;i++)
+	{
+		for(j=0;j<(Bptr-i);j++)
+		{
+			if(stackB[j]>stackB[j+1])
+			{
+				temp=stackB[j];
+				stackB[j]=stackB[j+1];
+				stackB[j+1]=temp;
+			}
+		}
 	}
 }
-
-void q8( int contador, char palavra[TAM] ,int size){
-    if ( contador < TAM ){
-        if ( palavra[contador] == 'h' ){
-          q9( ++contador, palavra ,size);
-
-        }else{
-            qErro();
-        }
-
-    }
+void tostring()
+{
+	int i=0;
+	sort();
+	for(i=0;i<=Bptr;i++)
+	{
+		temp[i]=stackB[i]+'0';
+	}
+	temp[i]='\0';
 }
+void display_DTran()
+{
+	int i,j;
+	printf("\n\t\t Tabela de Transicoes AFD");
+	printf("\n\t\t -------------------- ");
+	printf("\nEstados\tString\tEntradas\n ");
+	for(i=0;i<noi;i++)
+	{
+		printf("\t%c",inp[i]);
+	}
+	printf("\n \t----------");
+	for(i=0;i<nods;i++)
+	{
 
-void q9( int contador, char palavra[TAM] ,int size){
-    if ( palavra[contador] == 'a' ) {
-        q3 ( ++contador, palavra ,size);
+		if(Dstates[i].is_final==0)
+			printf("\n%c",Dstates[i].name);
+		else
+			printf("\n*%c",Dstates[i].name);
 
-    } else {
-        qErro();
-    }
+		printf("\t%s",Dstates[i].StateString);
+		for(j=0;j<noi;j++)
+		{
+			printf("\t%c",Dstates[i].trans[j]);
+		}
+	}
+	printf("\n");
 }
-
-
-void qErro(){
-    printf("Palavra regeitada pelo automata!\n");
+void move(int st,int j)
+{
+	int ctr=0;
+	while(ctr<States[st].tranlist[j].notran)
+	{
+		pushA(States[st].tranlist[j].tostates[ctr++]);
+	}
 }
-
-void qFim(){
-    printf("Palavra Aceita pelo automata!\n");
+void lambda_closure(int st)
+{
+	int ctr=0,in_state=st,curst=st,chk;
+	while(Aptr!=-1)
+	{
+		curst=popA();
+		ctr=0;
+		in_state=curst;
+		while(ctr<=States[curst].tranlist[noi].notran)
+		{
+			chk=seek(stackB,Bptr,in_state);
+			if(chk==0)
+				pushB(in_state);
+			in_state=States[curst].tranlist[noi].tostates[ctr++];
+			chk=seek(stackA,Aptr,in_state);
+			if(chk==0 && ctr<=States[curst].tranlist[noi].notran)
+				pushA(in_state);
+		}
+	}
+}
+main()
+{
+	int final[20],start,fin=0,i;
+	char c,ans,st[20];
+	printf("\nDigite o numero de estados para o AFN : ");
+	scanf("%d",&nos);
+	for(i=0;i<nos;i++)
+	{
+		States[i].no=i;
+	}
+	printf("\nDigite o estado inicial : ");
+	scanf("%d",&start);
+	printf("\nDigite o numero de estados finais : ");
+	scanf("%d",&nof);
+	printf("\nDigite os estados finais : \n");
+	for(i=0;i<nof;i++)
+		scanf("%d",&final[i]);
+	printf("\nDigite o numero de simbolos de entrada : ");
+	scanf("%d",&noi);
+	c=getchar();
+	printf("\nDigite os simbolos de entrada : \n ");
+	for(i=0;i<noi;i++)
+	{
+		scanf("%c",&inp[i]);
+		c=getchar();
+	}
+	inp[i]='e';
+	printf("\nDigite as transicoes : (-1 para sair)\n");
+	for(i=0;i<nos;i++)
+	{
+		for(j=0;j<=noi;j++)
+		{
+			States[i].tranlist[j].sym=inp[j];
+			k=0;
+			ans='y';
+			while(ans=='y')
+			{
+				printf("mover(%d,%c) : ",i,inp[j]);
+				scanf("%d",&States[i].tranlist[j].tostates[k++]);
+				if(States[i].tranlist[j].tostates[k-1]==-1)
+				{
+					k--;ans='n';
+					break;
+				}
+			}
+			States[i].tranlist[j].notran=k;
+		}
+	}
+ //Conversoes
+	i=0;nods=0;fin=0;
+	pushA(start);
+	lambda_closure(peekA());
+	tostring();
+	Dstates[nods].name='A';
+	nods++;
+	strcpy(Dstates[0].StateString,temp);
+	while(i<nods)
+	{
+		for(j=0;j<noi;j++)
+		{
+			fin=0;
+			copy(i);
+			while(Bptr!=-1)
+			{
+				move(popB(),j);
+			}
+			while(Aptr!=-1)
+				lambda_closure(peekA());
+			tostring();
+			for(k=0;k<nods;k++)
+			{
+				if((strcmp(temp,Dstates[k].StateString)==0))
+				{
+					Dstates[i].trans[j]=Dstates[k].name;
+					break;
+				}
+			}
+			if(k==nods)
+			{
+				nods++;
+				for(k=0;k<nof;k++)
+				{
+					fin=seek(stackB,Bptr,final[k]);
+					if(fin==1)
+					{
+						Dstates[nods-1].is_final=1;
+						break;
+					}									}
+				strcpy(Dstates[nods-1].StateString,temp);
+				Dstates[nods-1].name='A'+nods-1;
+				Dstates[i].trans[j]=Dstates[nods-1].name;
+			}
+		}
+		i++;
+	}
+	display_DTran();
 }
