@@ -109,9 +109,9 @@ void tostring()
 void display_DTran()
 {
 	int i,j;
-	printf("\n\t\t Tabela de Transicoes AFD");
-	printf("\n\t\t -------------------- ");
-	printf("\nEstados\tString\tEntradas\n ");
+	printf("\nTabela de Transicoes AFD");
+	printf("\n-------------------- ");
+	printf("\nEstados\tEntradas\n ");
 	for(i=0;i<noi;i++)
 	{
 		printf("\t%c",inp[i]);
@@ -125,11 +125,12 @@ void display_DTran()
 		else
 			printf("\n*%c",Dstates[i].name);
 
-		printf("\t%s",Dstates[i].StateString);
+		//printf("\t%s",Dstates[i].StateString);
 		for(j=0;j<noi;j++)
 		{
 			printf("\t%c",Dstates[i].trans[j]);
 		}
+        printf("\n");
 	}
 	printf("\n");
 }
