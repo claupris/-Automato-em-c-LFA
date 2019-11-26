@@ -10,8 +10,10 @@
 
 //NFA to DFA conversion
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #define STATES 50
+
 struct Dstate
 {
 	char name; // nome
@@ -110,7 +112,7 @@ void display_DTran()
 {
 	int i,j;
 	printf("\nTabela de Transicoes AFD");
-	printf("\n-------------------- ");
+	printf("\n");
 	printf("\nEstados\tEntradas\n ");
 	for(i=0;i<noi;i++)
 	{
@@ -258,4 +260,5 @@ main()
 		i++;
 	}
 	display_DTran();
+	system("pause");
 }

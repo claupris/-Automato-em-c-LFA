@@ -1,5 +1,6 @@
 # depslib dependency file v1.0
-1574794036 source:c:\users\prisc\documents\atividades\automato\main.c
+1574795854 source:c:\users\prisc\documents\atividades\automato\main.c
 	<stdio.h>
+	<stdlib.h>
 	<string.h>
 
